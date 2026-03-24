@@ -1,5 +1,5 @@
 # -- Enable or disable the nri-prometheus integration
-enabled: false
+enabled: true
 
 # -- Override the name of the chart
 nameOverride: ""
