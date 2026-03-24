@@ -39,17 +39,24 @@ tests:
       cluster: my-cluster-name
       lowDataMode: true
     asserts:
-      - matchRegex:
+      - equal:
           path: data["config.yaml"]
-          pattern: 'cluster_name: my-cluster-name'
-        template: templates/configmap.yaml
-      - matchRegex:
-          path: data["config.yaml"]
-          pattern: 'transformations:'
-        template: templates/configmap.yaml
-      - matchRegex:
-          path: data["config.yaml"]
-          pattern: 'ignore_metrics:'
+          value: |
+            cluster_name: my-cluster-name
+            audit: false
+            insecure_skip_verify: false
+            require_scrape_enabled_label_for_nodes: true
+            scrape_enabled_label: prometheus.io/scrape
+            scrape_endpoints: false
+            scrape_services: true
+            transformations:
+            - description: Low data mode defaults
+              ignore_metrics:
+              - prefixes:
+                - kube_
+                - container_
+                - machine_
+                - cadvisor_
         template: templates/configmap.yaml
 
   - it: merges existing transformation with lowDataMode.
@@ -66,19 +73,27 @@ tests:
               attributes:
                 container_name: containerName
     asserts:
-      - matchRegex:
+      - equal:
           path: data["config.yaml"]
-          pattern: 'cluster_name: my-cluster-name'
-        template: templates/configmap.yaml
-      - matchRegex:
-          path: data["config.yaml"]
-          pattern: 'Custom transformation Example'
-        template: templates/configmap.yaml
-      - matchRegex:
-          path: data["config.yaml"]
-          pattern: 'Low data mode defaults'
-        template: templates/configmap.yaml
-      - matchRegex:
-          path: data["config.yaml"]
-          pattern: 'ignore_metrics:'
+          value: |
+            cluster_name: my-cluster-name
+            audit: false
+            insecure_skip_verify: false
+            require_scrape_enabled_label_for_nodes: true
+            scrape_enabled_label: prometheus.io/scrape
+            scrape_endpoints: false
+            scrape_services: true
+            transformations:
+            - description: Custom transformation Example
+              rename_attributes:
+              - attributes:
+                  container_name: containerName
+                metric_prefix: test_
+            - description: Low data mode defaults
+              ignore_metrics:
+              - prefixes:
+                - kube_
+                - container_
+                - machine_
+                - cadvisor_
         template: templates/configmap.yaml

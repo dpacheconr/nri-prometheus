@@ -14,8 +14,8 @@ data:
     {{- include "nri-prometheus.mergeTransformations" . -}}
   {{- else if (include "newrelic.common.lowDataMode" .) -}}
     {{/* When lowDataMode is enabled without custom transformations, merge config with defaults */}}
-    {{ $lowDataDefault := .Files.Get "static/lowdatamodedefaults.yaml" | fromYaml }}
-    {{ $mergedConfig := mergeOverwrite (deepCopy .Values.config) $lowDataDefault }}
+    {{- $lowDataDefault := .Files.Get "static/lowdatamodedefaults.yaml" | fromYaml -}}
+    {{- $mergedConfig := mergeOverwrite (deepCopy .Values.config) $lowDataDefault }}
     {{- omit $mergedConfig "transformations" | toYaml | nindent 4 -}}
     {{/* Render transformations array from lowDataMode defaults */}}
     transformations:
